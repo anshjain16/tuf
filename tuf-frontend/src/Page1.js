@@ -6,12 +6,14 @@ import "./App.css";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
 import { Button } from "antd/es/radio";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRightOutlined, LoadingOutlined } from "@ant-design/icons";
 
 function Page1() {
   let navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [language, setLanguage] = useState("cpp");
+  const [loading, setLoading] = useState(false);
   const [code, setCode] = useState("");
   const [stdin, setStdin] = useState("");
   const languageOptions = [
@@ -55,6 +57,7 @@ function Page1() {
   };
 
   const handleFormSubmit = async () => {
+    setLoading(true);
     const base64code = base64_encode(code);
     console.log(language);
     let languageCode = languageOptions.find((l) => l.value === language).id;
@@ -103,6 +106,7 @@ function Page1() {
       navigate("/submissions");
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
 
     // const tempOut = "aGVsbG8gV29ybGQ=\n";
@@ -110,53 +114,66 @@ function Page1() {
 
   return (
     <div>
-      <div>hello</div>
+      <div className="flex flex-row items-center justify-between w-full pl-16 pr-16 pt-5 pb-5 bg-stone-300">
+        <div className="text-3xl font-bold font-mono">Create a submission</div>
+        <div>
+          <Link to="/submissions">
+            All submissions <ArrowRightOutlined />
+          </Link>
+        </div>
+      </div>
       {/* <Button type="primary">click me</Button> */}
-      <Form
-        labelCol={{
-          span: 4,
-        }}
-        wrapperCol={{
-          span: 14,
-        }}
-        layout="horizontal"
-        style={{
-          maxWidth: 600,
-        }}
-      >
-        <Form.Item label="Username">
-          <Input className="rounded-md" onChange={handleUsernameChange}></Input>
-        </Form.Item>
-        <span className="p-5">Select Language: </span>
-        <Cascader
-          options={languageOptions}
-          onChange={onLanguageChange}
-          placeholder="select language"
-          className="width-8"
-          defaultValue={languageOptions[0].value}
-        ></Cascader>
-        <br></br>
-        <br></br>
-        <span className="p-5">Code: </span>
-        <Editor
-          height="70vh"
-          // defaultLanguage={language}
-          defaultValue="write your code here"
-          width="50vw"
-          className="p-5"
-          theme="vs-dark"
-          language={language}
-          onChange={handleEditorChange}
-        />
-        <Form.Item label="stdin">
-          <TextArea onChange={handleStdinChange}></TextArea>
-        </Form.Item>
-        <Form.Item className="p-5">
-          <Button type="submit" onClick={handleFormSubmit}>
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
+      <div className="p-5">
+        <Form
+          labelCol={{
+            span: 4,
+          }}
+          wrapperCol={{
+            span: 14,
+          }}
+          layout="horizontal"
+          style={{
+            maxWidth: 600,
+          }}
+        >
+          <Form.Item label="Username">
+            <Input
+              className="rounded-md"
+              onChange={handleUsernameChange}
+            ></Input>
+          </Form.Item>
+          <span className="p-5">Select Language: </span>
+          <Cascader
+            options={languageOptions}
+            onChange={onLanguageChange}
+            placeholder="select language"
+            className="width-8"
+            defaultValue={languageOptions[0].value}
+          ></Cascader>
+          <br></br>
+          <br></br>
+          <span className="p-5">Code: </span>
+          <Editor
+            height="70vh"
+            // defaultLanguage={language}
+            defaultValue={language == "python" ? "# code here" : "// code here"}
+            width="50vw"
+            className="p-5"
+            theme="vs-dark"
+            language={language}
+            onChange={handleEditorChange}
+          />
+          <Form.Item label="stdin">
+            <TextArea onChange={handleStdinChange}></TextArea>
+          </Form.Item>
+          <Form.Item className="p-5">
+            <Button type="submit" onClick={handleFormSubmit} disabled={loading}>
+              {loading === true ? <LoadingOutlined></LoadingOutlined> : <></>}
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Modal } from "antd";
 import { encode, decode } from "base-64";
-import { CodeOutlined } from "@ant-design/icons";
+import { CodeOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 const Page2 = () => {
   const [submissions, setSubmissions] = useState([]);
@@ -91,7 +92,11 @@ const Page2 = () => {
     <div>
       <div className="flex flex-row items-center justify-between w-full pl-16 pr-16 pt-5 pb-5 bg-stone-300">
         <div className="text-3xl font-bold font-mono">Submissions</div>
-        <div>link to create submission</div>
+        <div>
+          <Link to="/">
+            <ArrowLeftOutlined></ArrowLeftOutlined> Create a submission
+          </Link>
+        </div>
       </div>
       <div className="p-10">
         <Table columns={columns} dataSource={submissions} onChange={onChange} />
