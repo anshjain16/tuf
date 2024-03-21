@@ -2,15 +2,14 @@ import { Form, Input, Cascader } from "antd";
 import Editor from "@monaco-editor/react";
 import { encode as base64_encode, decode } from "base-64";
 import axios from "axios";
-import Page2 from "./Page2";
 import "./App.css";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Button } from "antd/es/radio";
+import { useNavigate } from "react-router-dom";
 
 function Page1() {
+  let navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [language, setLanguage] = useState("cpp");
   const [code, setCode] = useState("");
@@ -80,32 +79,33 @@ function Page1() {
       },
     };
 
-    // try {
-    //   const res1 = await axios.request(options);
-    //   console.log(res1.data);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      const res1 = await axios.request(options);
+      console.log(res1.data);
+      const res2 = await fetch(
+        `https://tuf-nfng.onrender.com/api/v1/submission`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            source_code: base64code,
+            stdin: stdin,
+            language: language,
+            output: decode(res1.data.stdout),
+            code_snippet: code.slice(0, 97) + "...",
+          }),
+        }
+      );
+      console.log(res2);
+      navigate("/submissions");
+    } catch (error) {
+      console.error(error);
+    }
 
-    const tempOut = "aGVsbG8gV29ybGQ=\n";
-    const res2 = await fetch(
-      `https://tuf-nfng.onrender.com/api/v1/submission`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          source_code: base64code,
-          stdin: stdin,
-          language: language,
-          output: decode(tempOut),
-          code_snippet: code.slice(0, 97) + "...",
-        }),
-      }
-    );
-    console.log(res2);
+    // const tempOut = "aGVsbG8gV29ybGQ=\n";
   };
 
   return (
