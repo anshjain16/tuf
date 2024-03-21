@@ -32,6 +32,8 @@ const createSubmission = async (req, res) => {
       [username, source_code, stdin, language, output, code_snippet]
     );
 
+    const queryRes2 = await dbclient.query("SELECT * FROM CodeSubmission");
+    await redisClient.set("all_submissions", JSON.stringify(query_res.rows));
     console.log(query_res.rows);
     res.status(200).send("submission created");
   } catch (error) {
